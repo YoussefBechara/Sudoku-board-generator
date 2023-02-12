@@ -1,0 +1,60 @@
+import random
+from pprint import pprint
+def plant_empty_squares(puzzle, num_empty_squares):
+    for i in range(num_empty_squares + 1):
+        x = random.randint(0, 8)
+        y = random.randint(0, 8)
+        if puzzle[x][y] == '_':
+            puzzle[x][y] = -1
+
+
+def is_empty_square(puzzle, row, col):
+    if puzzle[row][col] != -1:
+        if puzzle[row][col] == '_':
+            return True
+    else:
+        return False
+
+
+def is_valid_to_generate(puzzle, guess, row, col):
+    row_vals = puzzle[row]
+    if guess in row_vals:
+        return False
+    col_vals = []
+    for i in range(9):
+        col_vals.append(puzzle[i][col])
+    if guess in col_vals:
+        return False
+    row_start = (row // 3) * 3
+    col_start = (col // 3) * 3
+    for r in range(row_start, row_start + 3):
+        for c in range(col_start, col_start + 3):
+            if puzzle[r][c] == guess:
+                return False
+    return True
+
+
+def generate_sudoku(puzzle):
+    for r in range(9):
+        for c in range(9):
+            if is_empty_square(puzzle, r, c) is True:
+                list = [] #TO MAKE A RANDOM LIST
+                while len(list) < 9:
+                    iteration = random.randint(1, 9)
+                    if iteration not in list:
+                        list.append(iteration)
+                for guess in list:
+                    if is_valid_to_generate(puzzle, guess, r, c) is True:
+                        puzzle[r][c] = guess
+                        break
+                    else:
+                        puzzle[r][c] = -1
+
+
+
+board = [['_' for _ in range(9)] for _ in range(9)]
+plant_empty_squares(board, num_empty_squares=30)
+generate_sudoku(board)
+pprint(board)
+#only issue is that sometimes after generating the sudoku, 2 squares are still '_' so i replace them with empty squares -1
+#the reason behind this is that sometimes its invalid for any guess to be there so we need empty squares
